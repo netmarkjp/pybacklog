@@ -1,7 +1,7 @@
 pybacklog
 =================
 
-Backlog API Client Library for Python
+Backlog API v2 Client Library for Python
 
 # Requirements
 
@@ -26,7 +26,6 @@ activities = client.do("GET", "projects/{project_id_or_key}/activities",
           )  # GET /api/v2/projects/myproj/activities?activityTypeIds%5B%5D=1&activityTypeIds%5B%5D=2
 
 print(space.get(u"spaceKey"))
-"""
 ```
 
 # Development
@@ -34,6 +33,8 @@ print(space.get(u"spaceKey"))
 ```
 pip install -r requirements.txt
 pip install -r requirements_dev.txt
+
+PYTHONPATH=. python -m unittest tests
 ```
 
 # License

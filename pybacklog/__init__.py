@@ -12,6 +12,12 @@ class BacklogClient(object):
         self.endpoint = "https://%s.backlog.jp/api/v2/{path}" % space_name
 
     def do(self, method, url, url_params={}, query_params={}, request_params={}):
+        """
+        - Method: method
+        - URL: url.format(**url_params)
+        - Parameter: query_params & apiKey=api_key
+        - Request Body(data): request_params
+        """
         _url = url.format(**url_params).lstrip("/")
         _endpoint = self.endpoint.format(path=_url)
         _headers = {"Content-Type": "application/x-www-form-urlencoded"}
