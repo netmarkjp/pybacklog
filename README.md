@@ -10,6 +10,12 @@ Backlog API v2 Client Library for Python
 - Python 2.7
 - Python 3.5
 
+# Install
+
+```
+pip install pybacklog
+```
+
 # Usage
 
 ```python
