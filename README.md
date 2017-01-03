@@ -15,7 +15,6 @@ Backlog API Client Library for Python
 ```python
 from pybacklog import BacklogClient
 
-from pybacklog import BacklogClient
 client = BacklogClient("your_space_name", "your_api_key")
 space = client.do("GET", "space")  # GET /api/v2/space
 projects = client.do("GET", "projects",
@@ -37,7 +36,7 @@ pip install -r requirements.txt
 pip install -r requirements_dev.txt
 ```
 
-License
+# License
 
 Copyright 2017 Toshiaki Baba
 
