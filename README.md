@@ -5,10 +5,8 @@ Backlog API v2 Client Library for Python
 
 # Requirements
 
-- Python 2
-    - 2.7.12
-- Python 3
-    - 3.5.2
+- Python 2.7
+- Python 3.5
 
 # Usage
 
