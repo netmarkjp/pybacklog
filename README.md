@@ -3,6 +3,8 @@ pybacklog
 
 Backlog API v2 Client Library for Python
 
+[![Build Status](https://travis-ci.org/netmarkjp/pybacklog.svg?branch=master)](https://travis-ci.org/netmarkjp/pybacklog)
+
 # Requirements
 
 - Python 2.7
