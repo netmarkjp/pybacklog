@@ -26,7 +26,7 @@ class BacklogClient(object):
             resp = requests.patch(
                 _endpoint, params=query_params, data=request_params, headers=_headers)
         elif method == "post":
-            resp = requests.patch(
+            resp = requests.post(
                 _endpoint, params=query_params, data=request_params, headers=_headers)
         else:
             raise Exception("Unsupported Method")
