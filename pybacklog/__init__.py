@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
+import re
 
 
 class BacklogClient(object):
@@ -21,6 +22,11 @@ class BacklogClient(object):
         _url = url.format(**url_params).lstrip("/")
         _endpoint = self.endpoint.format(path=_url)
         _headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        # remove 4 byte characters
+        pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
+        for k, v in request_params:
+            request_params[k] = pattern.sub(u'\uFFFD', v)
 
         resp = None
 
