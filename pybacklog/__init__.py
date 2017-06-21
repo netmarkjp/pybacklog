@@ -23,10 +23,7 @@ class BacklogClient(object):
         _endpoint = self.endpoint.format(path=_url)
         _headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-        # remove 4 byte characters
-        pattern = re.compile(u'[^\u0000-\uD7FF\uE000-\uFFFF]', re.UNICODE)
-        for k, v in request_params:
-            request_params[k] = pattern.sub(u'\uFFFD', v)
+        request_params = BacklogClient.remove_mb4(request_params)
 
         resp = None
 
@@ -55,3 +52,11 @@ class BacklogClient(object):
             content_id=activity.get(u"content").get(u"key_id"),
         )
         return url
+
+    @staticmethod
+    def remove_mb4(request_params):
+        # remove 4 byte characters
+        pattern = re.compile(u"[^\u0000-\uD7FF\uE000-\uFFFF]", re.UNICODE)
+        for key in request_params.keys():
+            request_params[key] = pattern.sub(u"\uFFFD", request_params[key])
+        return request_params
