@@ -42,7 +42,7 @@ issue = client.issue("YOUR_PROJECT-999")
 
 # create issue
 project_id = client.get_project_id(project_key)
-issue_type_id = client.issue_types(project_key)[0][u"id"]
+issue_type_id = client.project_issue_types(project_key)[0][u"id"]
 priority_id = client.priorities()[0][u"id"]
 
 client.create_issue(project_id,
@@ -52,7 +52,7 @@ client.create_issue(project_id,
                     {"description": u"a is b and c or d."})
 
 # add comment
-client.add_comment("YOUR_PROJECT-999", u"or ... else e.")
+client.add_issue_comment("YOUR_PROJECT-999", u"or ... else e.")
 ```
 
 extra parameters are here

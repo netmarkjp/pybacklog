@@ -42,6 +42,10 @@ class BacklogClient(object):
         if resp.status_code >= 400:
             raise Exception(resp, resp.text)
 
+        if resp.status_code == 204:
+            # used in star
+            return None
+
         return resp.json()
 
     def activity_to_issue_url(self, activity):
@@ -59,10 +63,12 @@ class BacklogClient(object):
         for key in request_params.keys():
             try:
                 if isinstance(request_params[key], unicode):
-                    request_params[key] = pattern.sub(u"\uFFFD", request_params[key])
+                    request_params[key] = pattern.sub(
+                        u"\uFFFD", request_params[key])
             except NameError:
                 # maybe python3
-                request_params[key] = pattern.sub(u"\uFFFD", request_params[key])
+                request_params[key] = pattern.sub(
+                    u"\uFFFD", request_params[key])
         return request_params
 
     # -------------------------------
@@ -118,10 +124,10 @@ class BacklogClient(object):
                        url_params={"issue_id_or_key": issue_id_or_key},
                        )
 
-    def issue_types(self, project_id_or_key):
+    def project_issue_types(self, project_id_or_key):
         """
         client = BacklogClient("your_space_name", "your_api_key")
-        client.issue_types("YOUR_PROJECT")
+        client.project_issue_types("YOUR_PROJECT")
         """
         return self.do("GET", "projects/{project_id_or_key}/issueTypes",
                        url_params={"project_id_or_key": project_id_or_key},
@@ -140,7 +146,7 @@ class BacklogClient(object):
         project_key = "YOUR_PROJECT"
 
         project_id = client.get_project_id(project_key)
-        issue_type_id = client.issue_types(project_key)[0][u"id"]
+        issue_type_id = client.project_issue_types(project_key)[0][u"id"]
         priority_id = client.priorities()[0][u"id"]
 
         client.create_issue(project_id,
@@ -159,10 +165,10 @@ class BacklogClient(object):
                        request_params=request_params,
                        )
 
-    def add_comment(self, issue_id_or_key, content, extra_request_params={}):
+    def add_issue_comment(self, issue_id_or_key, content, extra_request_params={}):
         """
         client = BacklogClient("your_space_name", "your_api_key")
-        client.add_comment("YOUR_PROJECT-999", u"or ... else e.")
+        client.add_issue_comment("YOUR_PROJECT-999", u"or ... else e.")
         """
         request_params = extra_request_params
         request_params["content"] = content
@@ -170,6 +176,62 @@ class BacklogClient(object):
                        url_params={"issue_id_or_key": issue_id_or_key},
                        request_params=request_params,
                        )
+
+    def users(self):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.users()
+        """
+        return self.do("GET", "users")
+
+    def user(self, user_id):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.user(3)
+        """
+        return self.do("GET", "users/{user_id}", url_params={"user_id": user_id})
+
+    def groups(self, extra_query_params={}):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.groups()
+        """
+        return self.do("GET", "groups", query_params=extra_query_params)
+
+    def group(self, group_id):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.group(3)
+        """
+        return self.do("GET", "groups/{group_id}", url_params={"group_id": group_id})
+
+    def user_stars(self, user_id, extra_query_params={}):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.user_stars(5)
+        client.user_stars(5, {"count": 100, "order": "asc"})
+        """
+        return self.do("GET", "users/{user_id}/stars",
+                       url_params={"user_id": user_id},
+                       query_params=extra_query_params)
+
+    def user_stars_count(self, user_id, extra_query_params={}):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.user_stars_count(5)
+        client.user_stars_count(5, {"since": "2017-05-01", "until": "2017-05-31"})
+        """
+        return self.do("GET", "users/{user_id}/stars/count",
+                       url_params={"user_id": user_id},
+                       query_params=extra_query_params)
+
+    def star(self, query_params):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.star({"issueId": 333})
+        """
+        return self.do("POST", "stars",
+                       query_params=query_params)
 
     # -------------------------------
     # extra utilities (PR welcome)
@@ -183,4 +245,10 @@ class BacklogClient(object):
         for p in projects:
             if p[u"name"] == project_key_or_name:
                 return p[u"id"]
+        return None
+
+    def get_issue_id(self, issue_key):
+        issue = self.issue(issue_key)
+        if issue:
+            return int(issue[u"id"])
         return None
