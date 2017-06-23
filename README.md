@@ -53,6 +53,14 @@ client.create_issue(project_id,
 
 # add comment
 client.add_issue_comment("YOUR_PROJECT-999", u"or ... else e.")
+
+# top 10 star collector
+star_collectors = [(client.user_stars_count(u[u"id"], {"since": "2017-06-01", "until": "2017-06-30"})[u"count"], u[u"name"]) for u in client.users()]
+star_collectors.sort()
+star_collectors.reverse()
+
+for i, (c, u) in enumerate(star_collectors[:10]):
+    print(i+1, c, u)
 ```
 
 extra parameters are here

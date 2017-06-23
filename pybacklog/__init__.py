@@ -43,6 +43,7 @@ class BacklogClient(object):
             raise Exception(resp, resp.text)
 
         if resp.status_code == 204:
+            # 204 NO_CONTENT is blank response
             # used in star
             return None
 
