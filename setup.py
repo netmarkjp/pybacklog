@@ -13,5 +13,5 @@ setup(
         "Topic :: Utilities",
     ],
     packages=["pybacklog"],
-    requires=["requests"],
+    install_requires=["requests"],
 )
