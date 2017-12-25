@@ -201,7 +201,7 @@ class BacklogClient(object):
         return self.do("GET", "users/{user_id}/activities",
                        url_params={"user_id": user_id},
                        query_params=extra_query_params)
-        
+
     def groups(self, extra_query_params={}):
         """
         client = BacklogClient("your_space_name", "your_api_key")
