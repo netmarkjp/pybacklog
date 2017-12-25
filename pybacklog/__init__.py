@@ -192,6 +192,16 @@ class BacklogClient(object):
         """
         return self.do("GET", "users/{user_id}", url_params={"user_id": user_id})
 
+    def user_activities(self, user_id, extra_query_params={}):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.user_activities(3)
+        client.user_activities(3, {"count": 2, "order": "asc"})
+        """
+        return self.do("GET", "users/{user_id}/activities",
+                       url_params={"user_id": user_id},
+                       query_params=extra_query_params)
+
     def groups(self, extra_query_params={}):
         """
         client = BacklogClient("your_space_name", "your_api_key")
