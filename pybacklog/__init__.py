@@ -234,6 +234,21 @@ class BacklogClient(object):
         return self.do("POST", "stars",
                        query_params=query_params)
 
+    def wikis(self, extra_query_params={}):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.wikis({"projectIdOrKey": 3})
+        """
+        return self.do("GET", "wikis",
+                       query_params=extra_query_params)
+
+    def wiki(self, wiki_id):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.wiki(3)
+        """
+        return self.do("GET", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id})
+        
     # -------------------------------
     # extra utilities (PR welcome)
     # -------------------------------
