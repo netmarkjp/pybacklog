@@ -63,6 +63,8 @@ for i, (c, u) in enumerate(star_collectors[:10]):
     print(i+1, c, u)
 ```
 
+supported operations are `pydoc pybacklog.BacklogClient`
+
 extra parameters are here
 => [Backlog API Overview \| Backlog Developer API \| Nulab](https://developer.nulab-inc.com/docs/backlog/)
 
