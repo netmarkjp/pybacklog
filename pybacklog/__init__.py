@@ -106,6 +106,15 @@ class BacklogClient(object):
                        query_params=extra_query_params,
                        )
 
+    def project_users(self, project_id_or_key):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.project_users("YOUR_PROJECT")
+        """
+        return self.do("GET", "projects/{project_id_or_key}/users",
+                       url_params={"project_id_or_key": project_id_or_key},
+                       )
+
     def issues(self, extra_query_params={}):
         """
         client = BacklogClient("your_space_name", "your_api_key")
