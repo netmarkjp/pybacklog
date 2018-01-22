@@ -36,6 +36,9 @@ class BacklogClient(object):
         elif method == "post":
             resp = requests.post(
                 _endpoint, params=query_params, data=request_params, headers=_headers)
+        elif method == "delete":
+            resp = requests.delete(
+                _endpoint, params=query_params, data=request_params, headers=_headers)
         else:
             raise Exception("Unsupported Method")
 
@@ -113,6 +116,58 @@ class BacklogClient(object):
         """
         return self.do("GET", "projects/{project_id_or_key}/users",
                        url_params={"project_id_or_key": project_id_or_key},
+                       )
+
+    def versions(self, project_id_or_key):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.versions(3)
+        """
+        return self.do("GET", "projects/{project_id_or_key}/versions",
+                       url_params={"project_id_or_key": project_id_or_key},
+                       )
+
+    def create_version(self, project_id_or_key, version_name, extra_request_params={}):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+
+        client.create_version("YOUR_PROJECT",
+                              "VERSION_NAME",
+                              {"description": "version description"})
+        """
+        request_params = extra_request_params
+        request_params["name"] = version_name
+        return self.do("POST", "projects/{project_id_or_key}/versions",
+                       url_params={"project_id_or_key": project_id_or_key},
+                       request_params=request_params,
+                       )
+
+    def update_version(self, project_id_or_key, version_id, version_name, extra_request_params={}):        
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.update_version("YOUR_PROJECT",
+                              3,
+                              "VERSION_NAME"
+                              {"description": "updated description",
+                               "archived": "true"})
+        """
+        
+        request_params = extra_request_params
+        request_params["name"] = version_name
+        return self.do("PATCH", "projects/{project_id_or_key}/versions/{version_id}",
+                       url_params={"project_id_or_key": project_id_or_key,
+                                   "version_id": version_id},
+                       request_params=request_params,
+                       )
+
+    def delete_version(self, project_id_or_key, version_id):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.delete_version("YOUR_PROJECT", 3)
+        """
+        return self.do("DELETE", "projects/{project_id_or_key}/versions/{version_id}",
+                       url_params={"project_id_or_key": project_id_or_key,
+                                   "version_id": version_id},
                        )
 
     def issues(self, extra_query_params={}):
