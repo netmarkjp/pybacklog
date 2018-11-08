@@ -9,7 +9,43 @@ class BacklogClient(object):
     def __init__(self, space_name, api_key):
         self.space_name = space_name
         self.api_key = api_key
-        self.endpoint = "https://%s.backlog.jp/api/v2/{path}" % space_name
+
+        ## auto detetcion of space location
+        self.endpoint = BacklogClient._detect_endpoint(space_name, api_key)
+
+
+    @staticmethod
+    def _detect_endpoint(space_name, api_key):
+        # at first try .com (new default)
+        _endpoint = "https://%s.backlog.com/api/v2/{path}" % space_name
+        resp = requests.get(_endpoint.format(path="space"), params={"apiKey": api_key})
+        if resp.status_code == 401:
+            # space found but got 401 (Authentication failure)
+            raise Exception(resp, resp.text)
+        try:
+            space_key = resp.json().get("spaceKey")
+            if space_key == space_name:
+                return _endpoint
+        except Exception:
+            # space not found
+            pass
+
+        # if space not found in .com, try .jp
+        _endpoint = "https://%s.backlog.jp/api/v2/{path}" % space_name
+        resp = requests.get(_endpoint.format(path="space"), params={"apiKey": api_key})
+        if resp.status_code == 401:
+            # space found but got 401 (Authentication failure)
+            raise Exception(resp, resp.text)
+        try:
+            space_key = resp.json().get("spaceKey")
+            if space_key == space_name:
+                return _endpoint
+        except Exception:
+            # space not found
+            pass
+
+        raise Exception("retrive space information failed. maybe space not found in .com nor .jp")
+
 
     def do(self, method, url, url_params={}, query_params={}, request_params={}):
         """
