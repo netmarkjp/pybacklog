@@ -9,7 +9,7 @@ class BacklogClient(object):
     def __init__(self, space_name, api_key):
         self.space_name = space_name
         self.api_key = api_key
-        self.endpoint = "https://%s.backlog.jp/api/v2/{path}" % space_name
+        self.endpoint = "https://%s.backlog.com/api/v2/{path}" % space_name
 
     def do(self, method, url, url_params={}, query_params={}, request_params={}):
         """
