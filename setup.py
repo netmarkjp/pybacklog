@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="pybacklog",
-    version="0.1.5",
+    version="0.1.6",
     description="Backlog API v2 Client",
     author="Toshiaki Baba",
     author_email="toshiaki@netmark.jp",
