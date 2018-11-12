@@ -225,6 +225,16 @@ class BacklogClient(object):
                        url_params={"issue_id_or_key": issue_id_or_key},
                        )
 
+    def issue_comments(self, issue_id_or_key, extra_query_params={}):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.issue_comments("YOUR_PROJECT-999")
+        """
+        return self.do("GET", "issues/{issue_id_or_key}/comments",
+                        url_params={"issue_id_or_key": issue_id_or_key},
+                        query_params=extra_query_params
+                        )
+
     def project_issue_types(self, project_id_or_key):
         """
         client = BacklogClient("your_space_name", "your_api_key")
