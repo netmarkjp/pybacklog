@@ -369,6 +369,14 @@ class BacklogClient(object):
         """
         return self.do("GET", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id})
 
+    def update_wiki(self, wiki_id, extra_request_params={}):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.update_wiki(3, {"name": "test", "content": "content test", "mailNotify": "true"})
+        """
+        request_params = extra_request_params
+        return self.do("PATCH", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id}, request_params=request_params)
+                       
     def wiki_history(self, wiki_id):
         """
         client = BacklogClient("your_space_name", "your_api_key")
