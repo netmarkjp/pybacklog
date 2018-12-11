@@ -1,3 +1,7 @@
+### 0.1.7 (Tue Dec 11 11:32:58 2018 +0900)
+
+- Merge pull request #12 from tys-hiroshi/master (Tue Dec 11 11:32:58 2018 +0900) [3c87f3c](https://github.com/netmarkjp/pybacklog/commit/3c87f3cd801ce764459bc2ad1588512ddfffb573)
+
 ### 0.1.6 (Mon Nov 12 11:10:57 2018 +0900)
 
 - Merge pull request #10 from tys-hiroshi/master (Mon Nov 12 11:10:57 2018 +0900) [72b659c](https://github.com/netmarkjp/pybacklog/commit/72b659c80aec543f819ee64e9df73946d586d733)
