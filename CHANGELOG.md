@@ -1,3 +1,9 @@
+### 0.1.8 (Tue Sep 8 15:11:32 2020 +0900)
+
+- Merge pull request #13 from netmarkjp/tidying-requrements (Tue Aug 27 10:37:17 2019 +0900) [78099cb](https://github.com/netmarkjp/pybacklog/commit/78099cbd70c4997829f714dff82285eaa0fd8169)
+- Merge pull request #1 from netmarkjp/master (Mon Jul 20 23:26:19 2020 +0900) [44c35ee](https://github.com/netmarkjp/pybacklog/commit/44c35eee5a59b3bfe178661e43c39e45c9518c2c)
+- Merge pull request #14 from tys-hiroshi/master (Tue Sep 8 15:11:32 2020 +0900) [85e8dc7](https://github.com/netmarkjp/pybacklog/commit/85e8dc7d2d405e248160a1e5da732a1171dda213)
+
 ### 0.1.7 (Tue Dec 11 11:32:58 2018 +0900)
 
 - Merge pull request #12 from tys-hiroshi/master (Tue Dec 11 11:32:58 2018 +0900) [3c87f3c](https://github.com/netmarkjp/pybacklog/commit/3c87f3cd801ce764459bc2ad1588512ddfffb573)
