@@ -391,6 +391,15 @@ class BacklogClient(object):
         """
         return self.do("GET", "wikis/{wiki_id}/stars", url_params={"wiki_id": wiki_id})
 
+    def project_statuses(self, project_id_or_key):
+        """
+        client = BacklogClient("your_space_name", "your_api_key")
+        client.project_statuses("YOUR_PROJECT")
+        """
+        return self.do("GET", "projects/{project_id_or_key}/statuses",
+                       url_params={"project_id_or_key": project_id_or_key},
+                       )
+
     # -------------------------------
     # extra utilities (PR welcome)
     # -------------------------------
