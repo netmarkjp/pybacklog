@@ -91,3 +91,5 @@ tmp
 temp
 node_modules
 bower_components
+
+.devcontainer
