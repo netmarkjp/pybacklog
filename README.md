@@ -7,7 +7,7 @@ Backlog API v2 Client Library for Python
 
 # Requirements
 
-- Python 2.7 or Python 3.5+
+- Python 3.11+
 - requests 2.x
 
 # Install
@@ -91,10 +91,8 @@ see also [Backlog API Overview \| Backlog Developer API \| Nulab](https://develo
 # Development
 
 ```
-pip install -r requirements.txt
-pip install -r requirements_dev.txt
-
-PYTHONPATH=. python -m unittest tests
+uv sync --group dev
+uv run python3 -m unittest tests
 ```
 
 # License
