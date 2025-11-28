@@ -38,6 +38,10 @@ dev = [
 [tool.ruff]
 target-version = "py314"
 line-length = 120
-lint.select = ["E", "F", "W"]
-lint.ignore = []  # Add specific error codes to ignore if needed
+# lint.select = ["E", "F", "W"]
+# lint.ignore = []
 exclude = [".venv", "build", "dist", ".eggs", "*.egg-info", ".ruff_cache", "__pycache__"]
+
+[tool.pyright]
+pythonVersion = "3.11"
+typeCheckingMode = "strict"

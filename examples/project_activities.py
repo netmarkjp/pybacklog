@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from typing import List, Tuple
+
 from pybacklog import BacklogClient
 import os
 
@@ -16,16 +18,26 @@ activities = client.do(
     query_params={"activityTypeId[]": [1, 2, 3, 14], "count": 100},
 )
 
-urls = []
-items = []
+urls: List[str] = []
+items: List[Tuple[str, str, str]] = []
 if activities:
     for activity in activities:
+        if not isinstance(activity, dict):
+            continue
+
+        created = activity.get("created", "")
+
         url = client.activity_to_issue_url(activity)
         if url in urls:
             continue
         urls.append(url)
 
-        item = (activity.get("created"), url, activity.get("content").get("summary"))
+        try:
+            summary = activity["content"]["summary"]
+        except (KeyError, TypeError):
+            summary = ""
+
+        item = (created, url, summary)
         items.append(item)
 
 for item in items:

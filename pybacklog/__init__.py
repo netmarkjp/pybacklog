@@ -2,7 +2,13 @@
 
 import requests
 import re
-from typing import Optional
+from typing import Any, Dict, List, Optional, Union, TypedDict
+
+
+class Project(TypedDict, total=False):
+    projectKey: str
+    name: str
+    id: int
 
 
 class BacklogClient(object):
@@ -52,12 +58,12 @@ class BacklogClient(object):
 
     def do(
         self,
-        method,
-        url,
-        url_params: Optional[dict] = None,
-        query_params: Optional[dict] = None,
-        request_params: Optional[dict] = None,
-    ):
+        method: str,
+        url: str,
+        url_params: Optional[Dict[str, Any]] = None,
+        query_params: Optional[Dict[str, Any]] = None,
+        request_params: Optional[Dict[str, Any]] = None,
+    ) -> Union[Dict[str, Any], List[Dict[str, Any]], None]:
         """
         - Method: method
         - URL: url.format(**url_params)
@@ -102,16 +108,19 @@ class BacklogClient(object):
 
         return resp.json()
 
-    def activity_to_issue_url(self, activity):
-        url = "https://{space}.backlog.jp/view/{project_key}-{content_id}".format(
-            space=self.space_name,
-            project_key=activity.get("project").get("projectKey"),
-            content_id=activity.get("content").get("key_id"),
-        )
+    def activity_to_issue_url(self, activity: Dict[str, Any]) -> str:
+        try:
+            url = "https://{space}.backlog.jp/view/{project_key}-{content_id}".format(
+                space=self.space_name,
+                project_key=activity["project"]["projectKey"],
+                content_id=activity["content"]["key_id"],
+            )
+        except KeyError as e:
+            raise KeyError(f"Missing required key in activity data: {e}")
         return url
 
     @staticmethod
-    def remove_mb4(request_params):
+    def remove_mb4(request_params: Dict[str, str]) -> Dict[str, str]:
         # remove 4 byte characters
         pattern = re.compile("[^\u0000-\ud7ff\ue000-\uffff]", re.UNICODE)
         for key in request_params.keys():
@@ -126,14 +135,14 @@ class BacklogClient(object):
     # - optional values => extra_query_params, extra_request_params
     #     - url_params may always required
 
-    def space(self):
+    def space(self) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.space()
         """
-        return self.do("GET", "space")
+        return self.do("GET", "space")  # pyright: ignore[reportReturnType]
 
-    def projects(self, extra_query_params: Optional[dict] = None):
+    def projects(self, extra_query_params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.projects()
@@ -141,9 +150,11 @@ class BacklogClient(object):
         """
         if extra_query_params is None:
             extra_query_params = {}
-        return self.do("GET", "projects", query_params=extra_query_params)
+        return self.do("GET", "projects", query_params=extra_query_params)  # pyright: ignore[reportReturnType]
 
-    def project_activities(self, project_id_or_key, extra_query_params: Optional[dict] = None):
+    def project_activities(
+        self, project_id_or_key: Union[str, int], extra_query_params: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.project_activities("YOUR_PROJECT")
@@ -156,9 +167,9 @@ class BacklogClient(object):
             "projects/{project_id_or_key}/activities",
             url_params={"project_id_or_key": project_id_or_key},
             query_params=extra_query_params,
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def project_users(self, project_id_or_key):
+    def project_users(self, project_id_or_key: Union[str, int]) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.project_users("YOUR_PROJECT")
@@ -167,9 +178,9 @@ class BacklogClient(object):
             "GET",
             "projects/{project_id_or_key}/users",
             url_params={"project_id_or_key": project_id_or_key},
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def versions(self, project_id_or_key):
+    def versions(self, project_id_or_key: Union[str, int]) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.versions(3)
@@ -178,9 +189,14 @@ class BacklogClient(object):
             "GET",
             "projects/{project_id_or_key}/versions",
             url_params={"project_id_or_key": project_id_or_key},
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def create_version(self, project_id_or_key, version_name, extra_request_params: Optional[dict] = None):
+    def create_version(
+        self,
+        project_id_or_key: Union[str, int],
+        version_name: str,
+        extra_request_params: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
 
@@ -197,9 +213,15 @@ class BacklogClient(object):
             "projects/{project_id_or_key}/versions",
             url_params={"project_id_or_key": project_id_or_key},
             request_params=request_params,
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def update_version(self, project_id_or_key, version_id, version_name, extra_request_params: Optional[dict] = None):
+    def update_version(
+        self,
+        project_id_or_key: Union[str, int],
+        version_id: str,
+        version_name: str,
+        extra_request_params: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.update_version("YOUR_PROJECT",
@@ -217,9 +239,9 @@ class BacklogClient(object):
             "projects/{project_id_or_key}/versions/{version_id}",
             url_params={"project_id_or_key": project_id_or_key, "version_id": version_id},
             request_params=request_params,
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def delete_version(self, project_id_or_key, version_id):
+    def delete_version(self, project_id_or_key: Union[str, int], version_id: str) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.delete_version("YOUR_PROJECT", 3)
@@ -228,9 +250,9 @@ class BacklogClient(object):
             "DELETE",
             "projects/{project_id_or_key}/versions/{version_id}",
             url_params={"project_id_or_key": project_id_or_key, "version_id": version_id},
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def issues(self, extra_query_params: Optional[dict] = None):
+    def issues(self, extra_query_params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.issues()
@@ -240,9 +262,9 @@ class BacklogClient(object):
         """
         if extra_query_params is None:
             extra_query_params = {}
-        return self.do("GET", "issues", query_params=extra_query_params)
+        return self.do("GET", "issues", query_params=extra_query_params)  # pyright: ignore[reportReturnType]
 
-    def issue(self, issue_id_or_key):
+    def issue(self, issue_id_or_key: Union[str, int]) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.issue("YOUR_PROJECT-999")
@@ -251,9 +273,11 @@ class BacklogClient(object):
             "GET",
             "issues/{issue_id_or_key}",
             url_params={"issue_id_or_key": issue_id_or_key},
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def issue_comments(self, issue_id_or_key, extra_query_params: Optional[dict] = None):
+    def issue_comments(
+        self, issue_id_or_key: Union[str, int], extra_query_params: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.issue_comments("YOUR_PROJECT-999")
@@ -265,9 +289,9 @@ class BacklogClient(object):
             "issues/{issue_id_or_key}/comments",
             url_params={"issue_id_or_key": issue_id_or_key},
             query_params=extra_query_params,
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def project_issue_types(self, project_id_or_key):
+    def project_issue_types(self, project_id_or_key: Union[str, int]) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.project_issue_types("YOUR_PROJECT")
@@ -276,18 +300,23 @@ class BacklogClient(object):
             "GET",
             "projects/{project_id_or_key}/issueTypes",
             url_params={"project_id_or_key": project_id_or_key},
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def priorities(self):
+    def priorities(self) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.priorities()
         """
-        return self.do("GET", "priorities")
+        return self.do("GET", "priorities")  # pyright: ignore[reportReturnType]
 
     def create_issue(
-        self, project_id, summary, issue_type_id, priority_id, extra_request_params: Optional[dict] = None
-    ):
+        self,
+        project_id: Union[str, int],
+        summary: str,
+        issue_type_id: Union[str, int],
+        priority_id: Union[str, int],
+        extra_request_params: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         project_key = "YOUR_PROJECT"
@@ -314,9 +343,11 @@ class BacklogClient(object):
             "POST",
             "issues",
             request_params=request_params,
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def add_issue_comment(self, issue_id_or_key, content, extra_request_params: Optional[dict] = None):
+    def add_issue_comment(
+        self, issue_id_or_key: Union[str, int], content: str, extra_request_params: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.add_issue_comment("YOUR_PROJECT-999", u"or ... else e.")
@@ -330,23 +361,25 @@ class BacklogClient(object):
             "issues/{issue_id_or_key}/comments",
             url_params={"issue_id_or_key": issue_id_or_key},
             request_params=request_params,
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def users(self):
+    def users(self) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.users()
         """
-        return self.do("GET", "users")
+        return self.do("GET", "users")  # pyright: ignore[reportReturnType]
 
-    def user(self, user_id):
+    def user(self, user_id: Union[str, int]) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.user(3)
         """
-        return self.do("GET", "users/{user_id}", url_params={"user_id": user_id})
+        return self.do("GET", "users/{user_id}", url_params={"user_id": user_id})  # pyright: ignore[reportReturnType]
 
-    def user_activities(self, user_id, extra_query_params: Optional[dict] = None):
+    def user_activities(
+        self, user_id: Union[str, int], extra_query_params: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.user_activities(3)
@@ -356,9 +389,9 @@ class BacklogClient(object):
             extra_query_params = {}
         return self.do(
             "GET", "users/{user_id}/activities", url_params={"user_id": user_id}, query_params=extra_query_params
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def groups(self, extra_query_params: Optional[dict] = None):
+    def groups(self, extra_query_params: Optional[Dict[str, Any]] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.groups()
@@ -367,14 +400,16 @@ class BacklogClient(object):
             extra_query_params = {}
         return self.do("GET", "groups", query_params=extra_query_params)
 
-    def group(self, group_id):
+    def group(self, group_id: Union[str, int]):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.group(3)
         """
         return self.do("GET", "groups/{group_id}", url_params={"group_id": group_id})
 
-    def user_stars(self, user_id, extra_query_params: Optional[dict] = None):
+    def user_stars(
+        self, user_id: Union[str, int], extra_query_params: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.user_stars(5)
@@ -382,9 +417,11 @@ class BacklogClient(object):
         """
         if extra_query_params is None:
             extra_query_params = {}
-        return self.do("GET", "users/{user_id}/stars", url_params={"user_id": user_id}, query_params=extra_query_params)
+        return self.do("GET", "users/{user_id}/stars", url_params={"user_id": user_id}, query_params=extra_query_params)  # pyright: ignore[reportReturnType]
 
-    def user_stars_count(self, user_id, extra_query_params: Optional[dict] = None):
+    def user_stars_count(
+        self, user_id: Union[str, int], extra_query_params: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.user_stars_count(5)
@@ -394,30 +431,32 @@ class BacklogClient(object):
             extra_query_params = {}
         return self.do(
             "GET", "users/{user_id}/stars/count", url_params={"user_id": user_id}, query_params=extra_query_params
-        )
+        )  # pyright: ignore[reportReturnType]
 
-    def star(self, query_params):
+    def star(self, query_params: Dict[str, Any]) -> None:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.star({"issueId": 333})
         """
-        return self.do("POST", "stars", query_params=query_params)
+        return self.do("POST", "stars", query_params=query_params)  # pyright: ignore[reportReturnType]
 
-    def wikis(self, project_id_or_key):
+    def wikis(self, project_id_or_key: Union[str, int]) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.wikis(3)
         """
-        return self.do("GET", "wikis", query_params={"projectIdOrKey": project_id_or_key})
+        return self.do("GET", "wikis", query_params={"projectIdOrKey": project_id_or_key})  # pyright: ignore[reportReturnType]
 
-    def wiki(self, wiki_id):
+    def wiki(self, wiki_id: Union[str, int]) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.wiki(3)
         """
-        return self.do("GET", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id})
+        return self.do("GET", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id})  # pyright: ignore[reportReturnType]
 
-    def update_wiki(self, wiki_id, extra_request_params: Optional[dict] = None):
+    def update_wiki(
+        self, wiki_id: Union[str, int], extra_request_params: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.update_wiki(3, {"name": "test", "content": "content test", "mailNotify": "true"})
@@ -425,23 +464,23 @@ class BacklogClient(object):
         if extra_request_params is None:
             extra_request_params = {}
         request_params = extra_request_params
-        return self.do("PATCH", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id}, request_params=request_params)
+        return self.do("PATCH", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id}, request_params=request_params)  # pyright: ignore[reportReturnType]
 
-    def wiki_history(self, wiki_id):
+    def wiki_history(self, wiki_id: Union[str, int]) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.wiki_history(3)
         """
-        return self.do("GET", "wikis/{wiki_id}/history", url_params={"wiki_id": wiki_id})
+        return self.do("GET", "wikis/{wiki_id}/history", url_params={"wiki_id": wiki_id})  # pyright: ignore[reportReturnType]
 
-    def wiki_stars(self, wiki_id):
+    def wiki_stars(self, wiki_id: Union[str, int]) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.wiki_stars(3)
         """
-        return self.do("GET", "wikis/{wiki_id}/stars", url_params={"wiki_id": wiki_id})
+        return self.do("GET", "wikis/{wiki_id}/stars", url_params={"wiki_id": wiki_id})  # pyright: ignore[reportReturnType]
 
-    def project_statuses(self, project_id_or_key):
+    def project_statuses(self, project_id_or_key: Union[str, int]) -> List[Dict[str, Any]]:
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.project_statuses("YOUR_PROJECT")
@@ -450,24 +489,25 @@ class BacklogClient(object):
             "GET",
             "projects/{project_id_or_key}/statuses",
             url_params={"project_id_or_key": project_id_or_key},
-        )
+        )  # pyright: ignore[reportReturnType]
 
     # -------------------------------
     # extra utilities (PR welcome)
     # -------------------------------
 
     def get_project_id(self, project_key_or_name: str) -> Optional[int | str]:
-        projects = self.projects() or []  # Ensure projects is an iterable
+        raw_projects = self.projects() or []
+        projects: List[Dict[str, Any]] = raw_projects
         for p in projects:
-            if p.get("projectKey") == project_key_or_name:
-                return p.get("id")
+            if "projectKey" in p and p["projectKey"] == project_key_or_name:
+                return p["id"]
         for p in projects:
-            if p.get("name") == project_key_or_name:
-                return p.get("id")
+            if "name" in p and p["name"] == project_key_or_name:
+                return p["id"]
         return None
 
     def get_issue_id(self, issue_key: str) -> Optional[int | str]:
         issue = self.issue(issue_key)
-        if issue is not None and "id" in issue:
+        if "id" in issue:
             return issue.get("id")
         return None
