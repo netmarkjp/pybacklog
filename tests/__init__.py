@@ -2,15 +2,22 @@
 
 from pybacklog import BacklogClient
 import unittest
+from unittest.mock import patch
 
 
 class TestBacklogClient(unittest.TestCase):
     def test_init(self):
-        try:
-            _ = BacklogClient("my_space_name", "my_api_key")
-            self.fail()
-        except Exception as _ex:
-            self.assertEqual(str(_ex), "retrive space information failed. maybe space not found in .com nor .jp")
+        # pass
+        BacklogClient("my_space_name", "my_api_key")
+
+        # raise exception
+        with patch("pybacklog.requests.get") as mock_get:
+            mock_get.side_effect = Exception("retrive space information failed. maybe space not found in .com nor .jp")
+            try:
+                BacklogClient("my_space_name", "my_api_key").endpoint()
+                self.fail()
+            except Exception as _ex:
+                self.assertEqual(str(_ex), "retrive space information failed. maybe space not found in .com nor .jp")
 
     def test_remove_mb4(self):
         testing = (

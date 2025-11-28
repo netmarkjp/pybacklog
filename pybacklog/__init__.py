@@ -10,7 +10,12 @@ class BacklogClient(object):
         self.api_key = api_key
 
         ## auto detetcion of space location
-        self.endpoint = BacklogClient._detect_endpoint(space_name, api_key)
+        self._endpoint = ""
+
+    def endpoint(self):
+        if not self._endpoint:
+            self._endpoint = BacklogClient._detect_endpoint(self.space_name, self.api_key)
+        return self._endpoint
 
     @staticmethod
     def _detect_endpoint(space_name, api_key):
@@ -52,7 +57,7 @@ class BacklogClient(object):
         - Request Body(data): request_params
         """
         _url = url.format(**url_params).lstrip("/")
-        _endpoint = self.endpoint.format(path=_url)
+        _endpoint = self.endpoint().format(path=_url)
         _headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         request_params = BacklogClient.remove_mb4(request_params)
