@@ -35,8 +35,8 @@ dev = [
 # Additional uv-specific configurations can be added here.
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py314"
 line-length = 120
-select = ["E", "F", "W"]
-ignore = []  # Add specific error codes to ignore if needed
-exclude = [".venv", "build", "dist"]
+lint.select = ["E", "F", "W"]
+lint.ignore = []  # Add specific error codes to ignore if needed
+exclude = [".venv", "build", "dist", ".eggs", "*.egg-info", ".ruff_cache", "__pycache__"]
