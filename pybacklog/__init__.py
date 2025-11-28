@@ -115,12 +115,7 @@ class BacklogClient(object):
         # remove 4 byte characters
         pattern = re.compile("[^\u0000-\ud7ff\ue000-\uffff]", re.UNICODE)
         for key in request_params.keys():
-            try:
-                if isinstance(request_params[key], unicode):
-                    request_params[key] = pattern.sub("\ufffd", request_params[key])
-            except NameError:
-                # maybe python3
-                request_params[key] = pattern.sub("\ufffd", request_params[key])
+            request_params[key] = pattern.sub("\ufffd", request_params[key])
         return request_params
 
     # -------------------------------
