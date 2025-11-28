@@ -456,18 +456,18 @@ class BacklogClient(object):
     # extra utilities (PR welcome)
     # -------------------------------
 
-    def get_project_id(self, project_key_or_name):
-        projects = self.projects()
+    def get_project_id(self, project_key_or_name: str) -> Optional[int | str]:
+        projects = self.projects() or []  # Ensure projects is an iterable
         for p in projects:
-            if p["projectKey"] == project_key_or_name:
-                return p["id"]
+            if p.get("projectKey") == project_key_or_name:
+                return p.get("id")
         for p in projects:
-            if p["name"] == project_key_or_name:
-                return p["id"]
+            if p.get("name") == project_key_or_name:
+                return p.get("id")
         return None
 
-    def get_issue_id(self, issue_key):
+    def get_issue_id(self, issue_key: str) -> Optional[int | str]:
         issue = self.issue(issue_key)
-        if issue:
-            return int(issue["id"])
+        if issue is not None and "id" in issue:
+            return issue.get("id")
         return None
