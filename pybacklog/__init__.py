@@ -5,14 +5,12 @@ import re
 
 
 class BacklogClient(object):
-
     def __init__(self, space_name, api_key):
         self.space_name = space_name
         self.api_key = api_key
 
         ## auto detetcion of space location
         self.endpoint = BacklogClient._detect_endpoint(space_name, api_key)
-
 
     @staticmethod
     def _detect_endpoint(space_name, api_key):
@@ -46,7 +44,6 @@ class BacklogClient(object):
 
         raise Exception("retrive space information failed. maybe space not found in .com nor .jp")
 
-
     def do(self, method, url, url_params={}, query_params={}, request_params={}):
         """
         - Method: method
@@ -67,14 +64,11 @@ class BacklogClient(object):
         if method == "get":
             resp = requests.get(_endpoint, params=query_params)
         elif method == "patch":
-            resp = requests.patch(
-                _endpoint, params=query_params, data=request_params, headers=_headers)
+            resp = requests.patch(_endpoint, params=query_params, data=request_params, headers=_headers)
         elif method == "post":
-            resp = requests.post(
-                _endpoint, params=query_params, data=request_params, headers=_headers)
+            resp = requests.post(_endpoint, params=query_params, data=request_params, headers=_headers)
         elif method == "delete":
-            resp = requests.delete(
-                _endpoint, params=query_params, data=request_params, headers=_headers)
+            resp = requests.delete(_endpoint, params=query_params, data=request_params, headers=_headers)
         else:
             raise Exception("Unsupported Method")
 
@@ -91,24 +85,22 @@ class BacklogClient(object):
     def activity_to_issue_url(self, activity):
         url = "https://{space}.backlog.jp/view/{project_key}-{content_id}".format(
             space=self.space_name,
-            project_key=activity.get(u"project").get(u"projectKey"),
-            content_id=activity.get(u"content").get(u"key_id"),
+            project_key=activity.get("project").get("projectKey"),
+            content_id=activity.get("content").get("key_id"),
         )
         return url
 
     @staticmethod
     def remove_mb4(request_params):
         # remove 4 byte characters
-        pattern = re.compile(u"[^\u0000-\uD7FF\uE000-\uFFFF]", re.UNICODE)
+        pattern = re.compile("[^\u0000-\ud7ff\ue000-\uffff]", re.UNICODE)
         for key in request_params.keys():
             try:
                 if isinstance(request_params[key], unicode):
-                    request_params[key] = pattern.sub(
-                        u"\uFFFD", request_params[key])
+                    request_params[key] = pattern.sub("\ufffd", request_params[key])
             except NameError:
                 # maybe python3
-                request_params[key] = pattern.sub(
-                    u"\uFFFD", request_params[key])
+                request_params[key] = pattern.sub("\ufffd", request_params[key])
         return request_params
 
     # -------------------------------
@@ -140,28 +132,34 @@ class BacklogClient(object):
         client.project_activities("YOUR_PROJECT")
         client.project_activities("YOUR_PROJECT", {"activityTypeId[]": [1, 2],})
         """
-        return self.do("get", "projects/{project_id_or_key}/activities",
-                       url_params={"project_id_or_key": project_id_or_key},
-                       query_params=extra_query_params,
-                       )
+        return self.do(
+            "get",
+            "projects/{project_id_or_key}/activities",
+            url_params={"project_id_or_key": project_id_or_key},
+            query_params=extra_query_params,
+        )
 
     def project_users(self, project_id_or_key):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.project_users("YOUR_PROJECT")
         """
-        return self.do("GET", "projects/{project_id_or_key}/users",
-                       url_params={"project_id_or_key": project_id_or_key},
-                       )
+        return self.do(
+            "GET",
+            "projects/{project_id_or_key}/users",
+            url_params={"project_id_or_key": project_id_or_key},
+        )
 
     def versions(self, project_id_or_key):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.versions(3)
         """
-        return self.do("GET", "projects/{project_id_or_key}/versions",
-                       url_params={"project_id_or_key": project_id_or_key},
-                       )
+        return self.do(
+            "GET",
+            "projects/{project_id_or_key}/versions",
+            url_params={"project_id_or_key": project_id_or_key},
+        )
 
     def create_version(self, project_id_or_key, version_name, extra_request_params={}):
         """
@@ -173,12 +171,14 @@ class BacklogClient(object):
         """
         request_params = extra_request_params
         request_params["name"] = version_name
-        return self.do("POST", "projects/{project_id_or_key}/versions",
-                       url_params={"project_id_or_key": project_id_or_key},
-                       request_params=request_params,
-                       )
+        return self.do(
+            "POST",
+            "projects/{project_id_or_key}/versions",
+            url_params={"project_id_or_key": project_id_or_key},
+            request_params=request_params,
+        )
 
-    def update_version(self, project_id_or_key, version_id, version_name, extra_request_params={}):        
+    def update_version(self, project_id_or_key, version_id, version_name, extra_request_params={}):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.update_version("YOUR_PROJECT",
@@ -187,24 +187,26 @@ class BacklogClient(object):
                               {"description": "updated description",
                                "archived": "true"})
         """
-        
+
         request_params = extra_request_params
         request_params["name"] = version_name
-        return self.do("PATCH", "projects/{project_id_or_key}/versions/{version_id}",
-                       url_params={"project_id_or_key": project_id_or_key,
-                                   "version_id": version_id},
-                       request_params=request_params,
-                       )
+        return self.do(
+            "PATCH",
+            "projects/{project_id_or_key}/versions/{version_id}",
+            url_params={"project_id_or_key": project_id_or_key, "version_id": version_id},
+            request_params=request_params,
+        )
 
     def delete_version(self, project_id_or_key, version_id):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.delete_version("YOUR_PROJECT", 3)
         """
-        return self.do("DELETE", "projects/{project_id_or_key}/versions/{version_id}",
-                       url_params={"project_id_or_key": project_id_or_key,
-                                   "version_id": version_id},
-                       )
+        return self.do(
+            "DELETE",
+            "projects/{project_id_or_key}/versions/{version_id}",
+            url_params={"project_id_or_key": project_id_or_key, "version_id": version_id},
+        )
 
     def issues(self, extra_query_params={}):
         """
@@ -221,28 +223,34 @@ class BacklogClient(object):
         client = BacklogClient("your_space_name", "your_api_key")
         client.issue("YOUR_PROJECT-999")
         """
-        return self.do("GET", "issues/{issue_id_or_key}",
-                       url_params={"issue_id_or_key": issue_id_or_key},
-                       )
+        return self.do(
+            "GET",
+            "issues/{issue_id_or_key}",
+            url_params={"issue_id_or_key": issue_id_or_key},
+        )
 
     def issue_comments(self, issue_id_or_key, extra_query_params={}):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.issue_comments("YOUR_PROJECT-999")
         """
-        return self.do("GET", "issues/{issue_id_or_key}/comments",
-                        url_params={"issue_id_or_key": issue_id_or_key},
-                        query_params=extra_query_params
-                        )
+        return self.do(
+            "GET",
+            "issues/{issue_id_or_key}/comments",
+            url_params={"issue_id_or_key": issue_id_or_key},
+            query_params=extra_query_params,
+        )
 
     def project_issue_types(self, project_id_or_key):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.project_issue_types("YOUR_PROJECT")
         """
-        return self.do("GET", "projects/{project_id_or_key}/issueTypes",
-                       url_params={"project_id_or_key": project_id_or_key},
-                       )
+        return self.do(
+            "GET",
+            "projects/{project_id_or_key}/issueTypes",
+            url_params={"project_id_or_key": project_id_or_key},
+        )
 
     def priorities(self):
         """
@@ -272,9 +280,11 @@ class BacklogClient(object):
         request_params["issueTypeId"] = issue_type_id
         request_params["priorityId"] = priority_id
 
-        return self.do("POST", "issues",
-                       request_params=request_params,
-                       )
+        return self.do(
+            "POST",
+            "issues",
+            request_params=request_params,
+        )
 
     def add_issue_comment(self, issue_id_or_key, content, extra_request_params={}):
         """
@@ -283,10 +293,12 @@ class BacklogClient(object):
         """
         request_params = extra_request_params
         request_params["content"] = content
-        return self.do("POST", "issues/{issue_id_or_key}/comments",
-                       url_params={"issue_id_or_key": issue_id_or_key},
-                       request_params=request_params,
-                       )
+        return self.do(
+            "POST",
+            "issues/{issue_id_or_key}/comments",
+            url_params={"issue_id_or_key": issue_id_or_key},
+            request_params=request_params,
+        )
 
     def users(self):
         """
@@ -308,9 +320,9 @@ class BacklogClient(object):
         client.user_activities(3)
         client.user_activities(3, {"count": 2, "order": "asc"})
         """
-        return self.do("GET", "users/{user_id}/activities",
-                       url_params={"user_id": user_id},
-                       query_params=extra_query_params)
+        return self.do(
+            "GET", "users/{user_id}/activities", url_params={"user_id": user_id}, query_params=extra_query_params
+        )
 
     def groups(self, extra_query_params={}):
         """
@@ -332,9 +344,7 @@ class BacklogClient(object):
         client.user_stars(5)
         client.user_stars(5, {"count": 100, "order": "asc"})
         """
-        return self.do("GET", "users/{user_id}/stars",
-                       url_params={"user_id": user_id},
-                       query_params=extra_query_params)
+        return self.do("GET", "users/{user_id}/stars", url_params={"user_id": user_id}, query_params=extra_query_params)
 
     def user_stars_count(self, user_id, extra_query_params={}):
         """
@@ -342,25 +352,23 @@ class BacklogClient(object):
         client.user_stars_count(5)
         client.user_stars_count(5, {"since": "2017-05-01", "until": "2017-05-31"})
         """
-        return self.do("GET", "users/{user_id}/stars/count",
-                       url_params={"user_id": user_id},
-                       query_params=extra_query_params)
+        return self.do(
+            "GET", "users/{user_id}/stars/count", url_params={"user_id": user_id}, query_params=extra_query_params
+        )
 
     def star(self, query_params):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.star({"issueId": 333})
         """
-        return self.do("POST", "stars",
-                       query_params=query_params)
+        return self.do("POST", "stars", query_params=query_params)
 
     def wikis(self, project_id_or_key):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.wikis(3)
         """
-        return self.do("GET", "wikis",
-                       query_params={"projectIdOrKey": project_id_or_key})
+        return self.do("GET", "wikis", query_params={"projectIdOrKey": project_id_or_key})
 
     def wiki(self, wiki_id):
         """
@@ -376,7 +384,7 @@ class BacklogClient(object):
         """
         request_params = extra_request_params
         return self.do("PATCH", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id}, request_params=request_params)
-                       
+
     def wiki_history(self, wiki_id):
         """
         client = BacklogClient("your_space_name", "your_api_key")
@@ -396,9 +404,11 @@ class BacklogClient(object):
         client = BacklogClient("your_space_name", "your_api_key")
         client.project_statuses("YOUR_PROJECT")
         """
-        return self.do("GET", "projects/{project_id_or_key}/statuses",
-                       url_params={"project_id_or_key": project_id_or_key},
-                       )
+        return self.do(
+            "GET",
+            "projects/{project_id_or_key}/statuses",
+            url_params={"project_id_or_key": project_id_or_key},
+        )
 
     # -------------------------------
     # extra utilities (PR welcome)
@@ -407,15 +417,15 @@ class BacklogClient(object):
     def get_project_id(self, project_key_or_name):
         projects = self.projects()
         for p in projects:
-            if p[u"projectKey"] == project_key_or_name:
-                return p[u"id"]
+            if p["projectKey"] == project_key_or_name:
+                return p["id"]
         for p in projects:
-            if p[u"name"] == project_key_or_name:
-                return p[u"id"]
+            if p["name"] == project_key_or_name:
+                return p["id"]
         return None
 
     def get_issue_id(self, issue_key):
         issue = self.issue(issue_key)
         if issue:
-            return int(issue[u"id"])
+            return int(issue["id"])
         return None
