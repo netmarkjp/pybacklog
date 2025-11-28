@@ -2,10 +2,11 @@
 
 import requests
 import re
+from typing import Optional
 
 
 class BacklogClient(object):
-    def __init__(self, space_name, api_key):
+    def __init__(self, space_name: str, api_key: str):
         self.space_name = space_name
         self.api_key = api_key
 
@@ -18,7 +19,7 @@ class BacklogClient(object):
         return self._endpoint
 
     @staticmethod
-    def _detect_endpoint(space_name, api_key):
+    def _detect_endpoint(space_name: str, api_key: str) -> str:
         # at first try .com (new default)
         _endpoint = "https://%s.backlog.com/api/v2/{path}" % space_name
         resp = requests.get(_endpoint.format(path="space"), params={"apiKey": api_key})
@@ -49,13 +50,27 @@ class BacklogClient(object):
 
         raise Exception("retrive space information failed. maybe space not found in .com nor .jp")
 
-    def do(self, method, url, url_params={}, query_params={}, request_params={}):
+    def do(
+        self,
+        method,
+        url,
+        url_params: Optional[dict] = None,
+        query_params: Optional[dict] = None,
+        request_params: Optional[dict] = None,
+    ):
         """
         - Method: method
         - URL: url.format(**url_params)
         - Parameter: query_params & apiKey=api_key
         - Request Body(data): request_params
         """
+        if url_params is None:
+            url_params = {}
+        if query_params is None:
+            query_params = {}
+        if request_params is None:
+            request_params = {}
+
         _url = url.format(**url_params).lstrip("/")
         _endpoint = self.endpoint().format(path=_url)
         _headers = {"Content-Type": "application/x-www-form-urlencoded"}
@@ -123,20 +138,24 @@ class BacklogClient(object):
         """
         return self.do("GET", "space")
 
-    def projects(self, extra_query_params={}):
+    def projects(self, extra_query_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.projects()
         client.projects({"archived": "false",})
         """
+        if extra_query_params is None:
+            extra_query_params = {}
         return self.do("GET", "projects", query_params=extra_query_params)
 
-    def project_activities(self, project_id_or_key, extra_query_params={}):
+    def project_activities(self, project_id_or_key, extra_query_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.project_activities("YOUR_PROJECT")
         client.project_activities("YOUR_PROJECT", {"activityTypeId[]": [1, 2],})
         """
+        if extra_query_params is None:
+            extra_query_params = {}
         return self.do(
             "get",
             "projects/{project_id_or_key}/activities",
@@ -166,7 +185,7 @@ class BacklogClient(object):
             url_params={"project_id_or_key": project_id_or_key},
         )
 
-    def create_version(self, project_id_or_key, version_name, extra_request_params={}):
+    def create_version(self, project_id_or_key, version_name, extra_request_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
 
@@ -174,6 +193,8 @@ class BacklogClient(object):
                               "VERSION_NAME",
                               {"description": "version description"})
         """
+        if extra_request_params is None:
+            extra_request_params = {}
         request_params = extra_request_params
         request_params["name"] = version_name
         return self.do(
@@ -183,7 +204,7 @@ class BacklogClient(object):
             request_params=request_params,
         )
 
-    def update_version(self, project_id_or_key, version_id, version_name, extra_request_params={}):
+    def update_version(self, project_id_or_key, version_id, version_name, extra_request_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.update_version("YOUR_PROJECT",
@@ -192,7 +213,8 @@ class BacklogClient(object):
                               {"description": "updated description",
                                "archived": "true"})
         """
-
+        if extra_request_params is None:
+            extra_request_params = {}
         request_params = extra_request_params
         request_params["name"] = version_name
         return self.do(
@@ -213,7 +235,7 @@ class BacklogClient(object):
             url_params={"project_id_or_key": project_id_or_key, "version_id": version_id},
         )
 
-    def issues(self, extra_query_params={}):
+    def issues(self, extra_query_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.issues()
@@ -221,6 +243,8 @@ class BacklogClient(object):
         project_id = client.get_project_id("YOUR_PROJECT")
         client.issues({"projectId[]":[project_id], "sort": "dueDate"})
         """
+        if extra_query_params is None:
+            extra_query_params = {}
         return self.do("GET", "issues", query_params=extra_query_params)
 
     def issue(self, issue_id_or_key):
@@ -234,11 +258,13 @@ class BacklogClient(object):
             url_params={"issue_id_or_key": issue_id_or_key},
         )
 
-    def issue_comments(self, issue_id_or_key, extra_query_params={}):
+    def issue_comments(self, issue_id_or_key, extra_query_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.issue_comments("YOUR_PROJECT-999")
         """
+        if extra_query_params is None:
+            extra_query_params = {}
         return self.do(
             "GET",
             "issues/{issue_id_or_key}/comments",
@@ -264,7 +290,9 @@ class BacklogClient(object):
         """
         return self.do("GET", "priorities")
 
-    def create_issue(self, project_id, summary, issue_type_id, priority_id, extra_request_params={}):
+    def create_issue(
+        self, project_id, summary, issue_type_id, priority_id, extra_request_params: Optional[dict] = None
+    ):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         project_key = "YOUR_PROJECT"
@@ -279,6 +307,8 @@ class BacklogClient(object):
                             priority_id,
                             {"description": u"a is b and c or d."})
         """
+        if extra_request_params is None:
+            extra_request_params = {}
         request_params = extra_request_params
         request_params["projectId"] = project_id
         request_params["summary"] = summary
@@ -291,11 +321,13 @@ class BacklogClient(object):
             request_params=request_params,
         )
 
-    def add_issue_comment(self, issue_id_or_key, content, extra_request_params={}):
+    def add_issue_comment(self, issue_id_or_key, content, extra_request_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.add_issue_comment("YOUR_PROJECT-999", u"or ... else e.")
         """
+        if extra_request_params is None:
+            extra_request_params = {}
         request_params = extra_request_params
         request_params["content"] = content
         return self.do(
@@ -319,21 +351,25 @@ class BacklogClient(object):
         """
         return self.do("GET", "users/{user_id}", url_params={"user_id": user_id})
 
-    def user_activities(self, user_id, extra_query_params={}):
+    def user_activities(self, user_id, extra_query_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.user_activities(3)
         client.user_activities(3, {"count": 2, "order": "asc"})
         """
+        if extra_query_params is None:
+            extra_query_params = {}
         return self.do(
             "GET", "users/{user_id}/activities", url_params={"user_id": user_id}, query_params=extra_query_params
         )
 
-    def groups(self, extra_query_params={}):
+    def groups(self, extra_query_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.groups()
         """
+        if extra_query_params is None:
+            extra_query_params = {}
         return self.do("GET", "groups", query_params=extra_query_params)
 
     def group(self, group_id):
@@ -343,20 +379,24 @@ class BacklogClient(object):
         """
         return self.do("GET", "groups/{group_id}", url_params={"group_id": group_id})
 
-    def user_stars(self, user_id, extra_query_params={}):
+    def user_stars(self, user_id, extra_query_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.user_stars(5)
         client.user_stars(5, {"count": 100, "order": "asc"})
         """
+        if extra_query_params is None:
+            extra_query_params = {}
         return self.do("GET", "users/{user_id}/stars", url_params={"user_id": user_id}, query_params=extra_query_params)
 
-    def user_stars_count(self, user_id, extra_query_params={}):
+    def user_stars_count(self, user_id, extra_query_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.user_stars_count(5)
         client.user_stars_count(5, {"since": "2017-05-01", "until": "2017-05-31"})
         """
+        if extra_query_params is None:
+            extra_query_params = {}
         return self.do(
             "GET", "users/{user_id}/stars/count", url_params={"user_id": user_id}, query_params=extra_query_params
         )
@@ -382,11 +422,13 @@ class BacklogClient(object):
         """
         return self.do("GET", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id})
 
-    def update_wiki(self, wiki_id, extra_request_params={}):
+    def update_wiki(self, wiki_id, extra_request_params: Optional[dict] = None):
         """
         client = BacklogClient("your_space_name", "your_api_key")
         client.update_wiki(3, {"name": "test", "content": "content test", "mailNotify": "true"})
         """
+        if extra_request_params is None:
+            extra_request_params = {}
         request_params = extra_request_params
         return self.do("PATCH", "wikis/{wiki_id}", url_params={"wiki_id": wiki_id}, request_params=request_params)
 
