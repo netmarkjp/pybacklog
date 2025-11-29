@@ -27,8 +27,8 @@ jobs:
     - name: Sync dependencies
       run: uv sync --group dev
 
-    - name: Run ruff
-      run: uv run ruff format . && uv run ruff check --fix .
+    - name: Run ruff and pyright
+      run: uv run ruff format . && uv run ruff check --fix . && uv run pyright
 
     - name: Run tests
       run: uv run python3 -m unittest tests
