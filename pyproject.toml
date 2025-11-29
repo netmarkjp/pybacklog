@@ -13,13 +13,14 @@ authors = [
 ]
 urls = { "Homepage" = "https://github.com/netmarkjp/pybacklog" }
 classifiers = [
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Topic :: Utilities"
 ]
-requires-python = ">=3.11, <3.15"
+requires-python = ">=3.10, <3.15"
 
 dependencies = [
   "requests >=2.12.4,<3.0"
@@ -36,12 +37,12 @@ dev = [
 # Additional uv-specific configurations can be added here.
 
 [tool.ruff]
-target-version = "py314"
+target-version = "py310"
 line-length = 120
 # lint.select = ["E", "F", "W"]
 # lint.ignore = []
 exclude = [".venv", "build", "dist", ".eggs", "*.egg-info", ".ruff_cache", "__pycache__"]
 
 [tool.pyright]
-pythonVersion = "3.11"
+pythonVersion = "3.10"
 typeCheckingMode = "strict"

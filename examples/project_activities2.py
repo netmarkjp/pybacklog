@@ -26,9 +26,10 @@ if activities:
 
         try:
             summary = activity["content"]["summary"]
-        except (KeyError, TypeError):
+        except KeyError:
             summary = ""
-
+        except TypeError:
+            summary = ""
         item = (created, url, summary)
         items.append(item)
 
