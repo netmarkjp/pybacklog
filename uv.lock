@@ -120,7 +120,7 @@ wheels = [
 
 [[package]]
 name = "pybacklog"
-version = "0.1.8"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "requests" },
