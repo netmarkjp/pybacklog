@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pybacklog"
+version = "1.0.0"
+description = "Backlog API v2 Client"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "BABA Toshiaki", email = "toshiaki@netmark.jp" }]
+keywords = ["backlog", "api"]
+classifiers = [
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Utilities",
+]
+requires-python = ">=3.10"
+
+dependencies = ["requests >=2.12.4,<3.0"]
+
+[project.urls]
+Homepage = "https://github.com/netmarkjp/pybacklog"
+Repository = "https://github.com/netmarkjp/pybacklog"
+
+[dependency-groups]
+dev = ["pyright>=1.1.407", "ruff>=0.14.6"]
+
+[tool.uv]
+# Additional uv-specific configurations can be added here.
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+# lint.select = ["E", "F", "W"]
+# lint.ignore = []
+exclude = [
+  ".venv",
+  "build",
+  "dist",
+  ".eggs",
+  "*.egg-info",
+  ".ruff_cache",
+  "__pycache__",
+]
+
+[tool.pyright]
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
